@@ -7,7 +7,3 @@ A Streamlit app for calculating Nigerian PAYE tax.
 - Bulk upload (CSV)
 - Editable tax bands
 - Download results
-
-## Run locally
-pip install -r requirements.txt
-streamlit run hr_payroll_app.py
