@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
-from io import BytesIO
+
 
 # Page config
 st.set_page_config(page_title="HR Payroll Tool", layout="wide")
