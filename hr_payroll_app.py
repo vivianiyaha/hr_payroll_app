@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
 from io import BytesIO
 
 # Page config
@@ -9,7 +11,10 @@ st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
 st.title("💼 HR Payroll (PAYE) Calculator")
 
-# Sidebar (Settings)
+# Upload logo
+logo_file = st.sidebar.file_uploader("Upload Company Logo", type=["png", "jpg", "jpeg"])
+
+# Sidebar settings
 st.sidebar.header("⚙️ Settings")
 
 pension_rate = st.sidebar.number_input("Pension Rate (%)", value=8.0) / 100
@@ -25,13 +30,12 @@ band2_rate = st.sidebar.number_input("Band 2 Rate (%)", value=15.0) / 100
 
 band3_rate = st.sidebar.number_input("Band 3 Rate (%)", value=18.0) / 100
 
-# Tax Calculation Function
+
+# PAYE Calculation
 def calculate_paye(monthly_salary):
     annual_salary = monthly_salary * 12
-
     pension = annual_salary * pension_rate
     nhf = annual_salary * nhf_rate
-
     taxable_income = annual_salary - (pension + nhf)
 
     layer1 = min(band1_limit, taxable_income) * band1_rate
@@ -50,29 +54,64 @@ def calculate_paye(monthly_salary):
         "Monthly Tax": monthly_tax
     }
 
-# PDF Generator
-def generate_pdf(name, result):
+
+# PDF Generator (Upgraded)
+def generate_pdf(name, result, logo_file):
     buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer)
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
 
-    content = []
+    elements = []
 
-    content.append(Paragraph(f"Payslip for {name}", styles["Title"]))
-    content.append(Spacer(1, 10))
+    # Add logo
+    if logo_file:
+        logo = Image(logo_file, width=100, height=50)
+        elements.append(logo)
 
-    for key, value in result.items():
-        content.append(Paragraph(f"{key}: ₦{value:,.2f}", styles["Normal"]))
-        content.append(Spacer(1, 8))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph("Employee Payslip", styles["Title"]))
+    elements.append(Spacer(1, 15))
 
-    doc.build(content)
+    elements.append(Paragraph(f"<b>Employee Name:</b> {name}", styles["Normal"]))
+    elements.append(Spacer(1, 10))
+
+    # Table Data
+    data = [
+        ["Description", "Amount (₦)"],
+        ["Annual Salary", f"{result['Annual Salary']:,.2f}"],
+        ["Pension", f"{result['Pension']:,.2f}"],
+        ["NHF", f"{result['NHF']:,.2f}"],
+        ["Taxable Income", f"{result['Taxable Income']:,.2f}"],
+        ["Annual Tax", f"{result['Annual Tax']:,.2f}"],
+        ["Monthly PAYE", f"{result['Monthly Tax']:,.2f}"],
+    ]
+
+    table = Table(data, colWidths=[250, 200])
+
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+
+        ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
+
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
     buffer.seek(0)
     return buffer
+
 
 # Tabs
 tab1, tab2 = st.tabs(["👤 Single Employee", "📂 Bulk Upload"])
 
-# Single Employee
+
+# SINGLE EMPLOYEE
 with tab1:
     st.subheader("Employee Input")
 
@@ -101,8 +140,7 @@ with tab1:
                 st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
-            # Generate PDF
-            pdf = generate_pdf(name, result)
+            pdf = generate_pdf(name, result, logo_file)
 
             st.download_button(
                 label="⬇️ Download Payslip (PDF)",
@@ -112,10 +150,10 @@ with tab1:
                 key="download_pdf"
             )
 
-# Bulk Upload
+
+# BULK UPLOAD
 with tab2:
     st.subheader("Upload Employee Data")
-
     st.markdown("Upload a CSV with columns: **Name, MonthlySalary**")
 
     file = st.file_uploader("Upload CSV", type=["csv"])
@@ -155,4 +193,4 @@ with tab2:
                 file_name="payroll_results.csv",
                 mime="text/csv",
                 key="download_csv"
-    )
+                                             )
