@@ -94,7 +94,7 @@ with tab1:
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
         # ✅ ADD PDF CODE RIGHT HERE
-        if st.button("Calculate"):
+    if st.button("Calculate"):
 
     if monthly_salary <= 0:
         st.warning("Enter a valid salary")
