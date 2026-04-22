@@ -71,28 +71,6 @@ with tab1:
     name = st.text_input("Employee Name")
     monthly_salary = st.number_input("Monthly Salary (₦)", min_value=0.0, step=1000.0)
 
-    if st.button("Calculate"):
-
-        if monthly_salary <= 0:
-            st.warning("Enter a valid salary")
-        else:
-            result = calculate_paye(monthly_salary)
-
-            st.markdown("## 📊 Results")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.write(f"**Name:** {name}")
-                st.write(f"Annual Salary: ₦{result['Annual Salary']:,.2f}")
-                st.write(f"Pension: ₦{result['Pension']:,.2f}")
-                st.write(f"NHF: ₦{result['NHF']:,.2f}")
-
-            with col2:
-                st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
-                st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
-                st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
-
         # ✅ ADD PDF CODE RIGHT HERE
     if st.button("Calculate"):
         if monthly_salary <= 0:
