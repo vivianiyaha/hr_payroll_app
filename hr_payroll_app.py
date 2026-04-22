@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4
 from io import BytesIO
 
 # Page config
@@ -36,18 +34,9 @@ def calculate_paye(monthly_salary):
 
     taxable_income = annual_salary - (pension + nhf)
 
-    # Tax bands
     layer1 = min(band1_limit, taxable_income) * band1_rate
-
-    layer2 = min(
-        band2_limit,
-        max(0, taxable_income - band1_limit)
-    ) * band2_rate
-
-    layer3 = max(
-        0,
-        taxable_income - (band1_limit + band2_limit)
-    ) * band3_rate
+    layer2 = min(band2_limit, max(0, taxable_income - band1_limit)) * band2_rate
+    layer3 = max(0, taxable_income - (band1_limit + band2_limit)) * band3_rate
 
     total_tax = layer1 + layer2 + layer3
     monthly_tax = total_tax / 12
@@ -61,6 +50,25 @@ def calculate_paye(monthly_salary):
         "Monthly Tax": monthly_tax
     }
 
+# PDF Generator
+def generate_pdf(name, result):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer)
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    content.append(Paragraph(f"Payslip for {name}", styles["Title"]))
+    content.append(Spacer(1, 10))
+
+    for key, value in result.items():
+        content.append(Paragraph(f"{key}: ₦{value:,.2f}", styles["Normal"]))
+        content.append(Spacer(1, 8))
+
+    doc.build(content)
+    buffer.seek(0)
+    return buffer
+
 # Tabs
 tab1, tab2 = st.tabs(["👤 Single Employee", "📂 Bulk Upload"])
 
@@ -71,36 +79,39 @@ with tab1:
     name = st.text_input("Employee Name")
     monthly_salary = st.number_input("Monthly Salary (₦)", min_value=0.0, step=1000.0)
 
-        # ✅ ADD PDF CODE RIGHT HERE
-    if st.button("Calculate"):
+    if st.button("Calculate", key="calc_single"):
         if monthly_salary <= 0:
             st.warning("Enter a valid salary")
-    else:
-        result = calculate_paye(monthly_salary)
+        else:
+            result = calculate_paye(monthly_salary)
 
-        if not name:
-            name = "Employee"
+            if not name:
+                name = "Employee"
 
-        # 👇 RESULTS DISPLAY
-        col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
 
-        with col1:
-            st.write(f"**Name:** {name}")
-            st.write(f"Annual Salary: ₦{result['Annual Salary']:,.2f}")
-            st.write(f"Pension: ₦{result['Pension']:,.2f}")
-            st.write(f"NHF: ₦{result['NHF']:,.2f}")
+            with col1:
+                st.write(f"**Name:** {name}")
+                st.write(f"Annual Salary: ₦{result['Annual Salary']:,.2f}")
+                st.write(f"Pension: ₦{result['Pension']:,.2f}")
+                st.write(f"NHF: ₦{result['NHF']:,.2f}")
 
-        with col2:
-            st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
-            st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
-            st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
-            
-        st.download_button (
-            label="⬇️ Download Payslip (PDF)",
-            data=pdf,
-            file_name=f"{name}_payslip.pdf",
-            mime="application/pdf"
+            with col2:
+                st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
+                st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
+                st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
+
+            # Generate PDF
+            pdf = generate_pdf(name, result)
+
+            st.download_button(
+                label="⬇️ Download Payslip (PDF)",
+                data=pdf,
+                file_name=f"{name}_payslip.pdf",
+                mime="application/pdf",
+                key="download_pdf"
             )
+
 # Bulk Upload
 with tab2:
     st.subheader("Upload Employee Data")
@@ -117,7 +128,7 @@ with tab2:
         else:
             results = []
 
-            for _, row in df.iterrows():
+            for i, row in df.iterrows():
                 res = calculate_paye(row["MonthlySalary"])
 
                 results.append({
@@ -136,13 +147,12 @@ with tab2:
             st.markdown("## 📊 Payroll Results")
             st.dataframe(result_df, use_container_width=True)
 
-            # Download button
             csv = result_df.to_csv(index=False).encode("utf-8")
 
             st.download_button(
                 label="⬇️ Download Results",
                 data=csv,
                 file_name="payroll_results.csv",
-                mime="text/csv"
-  )
-
+                mime="text/csv",
+                key="download_csv"
+    )
