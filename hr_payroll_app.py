@@ -116,7 +116,8 @@ with tab1:
             st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
             st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
             st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
-            (
+            
+        st.download_button (
             label="⬇️ Download Payslip (PDF)",
             data=pdf,
             file_name=f"{name}_payslip.pdf",
