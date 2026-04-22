@@ -103,7 +103,7 @@ with tab1:
         if not name:
             name = "Employee"
 
-        # 👇 RESULTS DISPLAY (leave this as is)
+        # 👇 RESULTS DISPLAY
         col1, col2 = st.columns(2)
 
         with col1:
@@ -116,8 +116,6 @@ with tab1:
             st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
             st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
             st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
-
-        # ✅ 👉 PASTE NEW PDF CODE RIGHT HERE
             (
             label="⬇️ Download Payslip (PDF)",
             data=pdf,
