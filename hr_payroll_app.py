@@ -163,7 +163,8 @@ with tab2:
                 data=csv,
                 file_name="payroll_results.csv",
                 mime="text/csv"
-                )                st.write(f"**Name:** {name}")
+                )                
+            st.write(f"**Name:** {name}")
                 st.write(f"Annual Salary: ₦{result['Annual Salary']:,.2f}")
                 st.write(f"Pension: ₦{result['Pension']:,.2f}")
                 st.write(f"NHF: ₦{result['NHF']:,.2f}")
