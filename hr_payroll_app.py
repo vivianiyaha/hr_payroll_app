@@ -121,7 +121,7 @@ with tab1:
             data=pdf,
             file_name=f"{name}_payslip.pdf",
             mime="application/pdf"
-        )
+            )
 # Bulk Upload
 with tab2:
     st.subheader("Upload Employee Data")
