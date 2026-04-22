@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
 from io import BytesIO
 
 # Page config
@@ -92,24 +94,32 @@ with tab1:
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
         # ✅ ADD PDF CODE RIGHT HERE
-        buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer)
-        styles = getSampleStyleSheet()
+        if st.button("Calculate"):
 
-        content = []
+    if monthly_salary <= 0:
+        st.warning("Enter a valid salary")
+    else:
+        result = calculate_paye(monthly_salary)
 
-        content.append(Paragraph(f"Payslip for {name}", styles["Title"]))
-        content.append(Paragraph(f"Monthly Salary: ₦{monthly_salary:,.2f}", styles["Normal"]))
-        content.append(Paragraph(f"Pension: ₦{result['Pension']:,.2f}", styles["Normal"]))
-        content.append(Paragraph(f"NHF: ₦{result['NHF']:,.2f}", styles["Normal"]))
-        content.append(Paragraph(f"Annual Tax: ₦{result['Annual Tax']:,.2f}", styles["Normal"]))
-        content.append(Paragraph(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}", styles["Normal"]))
+        if not name:
+            name = "Employee"
 
-        doc.build(content)
+        # 👇 RESULTS DISPLAY (leave this as is)
+        col1, col2 = st.columns(2)
 
-        pdf = buffer.getvalue()
+        with col1:
+            st.write(f"**Name:** {name}")
+            st.write(f"Annual Salary: ₦{result['Annual Salary']:,.2f}")
+            st.write(f"Pension: ₦{result['Pension']:,.2f}")
+            st.write(f"NHF: ₦{result['NHF']:,.2f}")
 
-        st.download_button(
+        with col2:
+            st.write(f"Taxable Income: ₦{result['Taxable Income']:,.2f}")
+            st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
+            st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
+
+        # ✅ 👉 PASTE NEW PDF CODE RIGHT HERE
+            (
             label="⬇️ Download Payslip (PDF)",
             data=pdf,
             file_name=f"{name}_payslip.pdf",
