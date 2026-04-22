@@ -91,6 +91,30 @@ with tab1:
                 st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
+        # ✅ ADD PDF CODE RIGHT HERE
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer)
+        styles = getSampleStyleSheet()
+
+        content = []
+
+        content.append(Paragraph(f"Payslip for {name}", styles["Title"]))
+        content.append(Paragraph(f"Monthly Salary: ₦{monthly_salary:,.2f}", styles["Normal"]))
+        content.append(Paragraph(f"Pension: ₦{result['Pension']:,.2f}", styles["Normal"]))
+        content.append(Paragraph(f"NHF: ₦{result['NHF']:,.2f}", styles["Normal"]))
+        content.append(Paragraph(f"Annual Tax: ₦{result['Annual Tax']:,.2f}", styles["Normal"]))
+        content.append(Paragraph(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}", styles["Normal"]))
+
+        doc.build(content)
+
+        pdf = buffer.getvalue()
+
+        st.download_button(
+            label="⬇️ Download Payslip (PDF)",
+            data=pdf,
+            file_name=f"{name}_payslip.pdf",
+            mime="application/pdf"
+        )
 # Bulk Upload
 with tab2:
     st.subheader("Upload Employee Data")
