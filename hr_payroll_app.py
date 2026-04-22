@@ -95,9 +95,8 @@ with tab1:
 
         # ✅ ADD PDF CODE RIGHT HERE
     if st.button("Calculate"):
-
-    if monthly_salary <= 0:
-        st.warning("Enter a valid salary")
+        if monthly_salary <= 0:
+            st.warning("Enter a valid salary")
     else:
         result = calculate_paye(monthly_salary)
 
