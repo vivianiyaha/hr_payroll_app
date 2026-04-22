@@ -1,16 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-# -----------------------------
 # Page config
-# -----------------------------
 st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
 st.title("💼 HR Payroll (PAYE) Calculator")
 
-# -----------------------------
 # Sidebar (Settings)
-# -----------------------------
 st.sidebar.header("⚙️ Settings")
 
 pension_rate = st.sidebar.number_input("Pension Rate (%)", value=8.0) / 100
@@ -26,9 +22,7 @@ band2_rate = st.sidebar.number_input("Band 2 Rate (%)", value=15.0) / 100
 
 band3_rate = st.sidebar.number_input("Band 3 Rate (%)", value=18.0) / 100
 
-# -----------------------------
 # Tax Calculation Function
-# -----------------------------
 def calculate_paye(monthly_salary):
     annual_salary = monthly_salary * 12
 
@@ -62,14 +56,10 @@ def calculate_paye(monthly_salary):
         "Monthly Tax": monthly_tax
     }
 
-# -----------------------------
 # Tabs
-# -----------------------------
 tab1, tab2 = st.tabs(["👤 Single Employee", "📂 Bulk Upload"])
 
-# -----------------------------
 # Single Employee
-# -----------------------------
 with tab1:
     st.subheader("Employee Input")
 
@@ -98,9 +88,7 @@ with tab1:
                 st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
-# -----------------------------
 # Bulk Upload
-# -----------------------------
 with tab2:
     st.subheader("Upload Employee Data")
 
