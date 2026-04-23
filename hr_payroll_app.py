@@ -67,6 +67,12 @@ def generate_pdf(name, result, logo_file):
     if logo_file:
         logo = Image(logo_file, width=100, height=50)
         elements.append(logo)
+    logo_path = "logo.png"
+    import os
+    if os.path.exists(logo_path):
+    logo = Image(logo_path, width=120, height=60)
+    elements.append(logo)
+    elements.append(Spacer(1, 10))
 
     elements.append(Spacer(1, 10))
     elements.append(Paragraph("Employee Payslip", styles["Title"]))
