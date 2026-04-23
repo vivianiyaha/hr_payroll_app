@@ -6,14 +6,14 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from io import BytesIO
 import os
-
+st.image("logo.png")
 # Page config
 st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
 st.title("💼 HR Payroll (PAYE) Calculator")
 
 # Upload logo (optional)
-logo_file = st.sidebar.file_uploader("Upload Company Logo (Optional)", type=["png", "jpg", "jpeg"])
+logo.png = st.sidebar.file_uploader("Upload Company Logo (Optional)", type=["png", "jpg", "jpeg"])
 
 # Sidebar settings
 st.sidebar.header("⚙️ Settings")
