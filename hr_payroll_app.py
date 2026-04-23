@@ -6,7 +6,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from io import BytesIO
 import os
-st.image("logo.png")
+
 # Page config
 st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
@@ -54,7 +54,7 @@ def calculate_paye(monthly_salary):
 
 
 # ✅ FIXED PDF GENERATOR
-def generate_pdf(name, result, logo_file):
+def generate_pdf(name, result, logo.png):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
