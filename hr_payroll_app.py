@@ -54,22 +54,16 @@ def calculate_paye(monthly_salary):
 
 
 # ✅ FIXED PDF GENERATOR
-def generate_pdf(name, result, logo.png):
+def generate_pdf(name, result):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
 
     elements = []
 
-    # ✅ LOGO HANDLING (SAFE)
-    logo = None
-
-    # Priority 1: local logo.png
+    # ✅ Use ONLY logo.png
     if os.path.exists("logo.png"):
         logo = Image("logo.png", width=120, height=60)
-
-    # Add logo if available
-    if logo:
         elements.append(logo)
         elements.append(Spacer(1, 10))
 
@@ -77,11 +71,10 @@ def generate_pdf(name, result, logo.png):
     elements.append(Paragraph("Employee Payslip", styles["Title"]))
     elements.append(Spacer(1, 15))
 
-    # Employee name
     elements.append(Paragraph(f"<b>Employee Name:</b> {name}", styles["Normal"]))
     elements.append(Spacer(1, 10))
 
-    # ✅ TABULAR PAYSLIP
+    # ✅ Table Payslip
     data = [
         ["Description", "Amount (₦)"],
         ["Annual Salary", f"{result['Annual Salary']:,.2f}"],
@@ -97,14 +90,7 @@ def generate_pdf(name, result, logo.png):
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-
         ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
-
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
 
@@ -113,7 +99,6 @@ def generate_pdf(name, result, logo.png):
     doc.build(elements)
     buffer.seek(0)
     return buffer
-
 
 # Tabs
 tab1, tab2 = st.tabs(["👤 Single Employee", "📂 Bulk Upload"])
