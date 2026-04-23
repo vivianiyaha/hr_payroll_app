@@ -12,8 +12,8 @@ st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
 st.title("💼 HR Payroll (PAYE) Calculator")
 
-# Upload logo
-logo_file = st.sidebar.file_uploader("Upload Company Logo", type=["png", "jpg", "jpeg"])
+# Upload logo (optional)
+logo_file = st.sidebar.file_uploader("Upload Company Logo (Optional)", type=["png", "jpg", "jpeg"])
 
 # Sidebar settings
 st.sidebar.header("⚙️ Settings")
@@ -56,7 +56,7 @@ def calculate_paye(monthly_salary):
     }
 
 
-# PDF Generator (Upgraded)
+# ✅ FIXED PDF GENERATOR
 def generate_pdf(name, result, logo_file):
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
@@ -64,23 +64,34 @@ def generate_pdf(name, result, logo_file):
 
     elements = []
 
-    # Add logo
-    if logo_file:
-        logo = Image(logo_file, width=100, height=50)
-        elements.append(logo)
-    logo_path = "logo.png"
-    
-    elements.append(logo)
-    elements.append(Spacer(1, 10))
+    # ✅ LOGO HANDLING (SAFE)
+    logo = None
 
-    elements.append(Spacer(1, 10))
+    # Priority 1: local logo.png
+    if os.path.exists("logo.png"):
+        logo = Image("logo.png", width=120, height=60)
+
+    # Priority 2: uploaded logo
+    elif logo_file:
+        logo_bytes = logo_file.read()
+        logo_buffer = BytesIO(logo_bytes)
+        logo_buffer.seek(0)
+        logo = Image(logo_buffer, width=120, height=60)
+
+    # Add logo if available
+    if logo:
+        elements.append(logo)
+        elements.append(Spacer(1, 10))
+
+    # Title
     elements.append(Paragraph("Employee Payslip", styles["Title"]))
     elements.append(Spacer(1, 15))
 
+    # Employee name
     elements.append(Paragraph(f"<b>Employee Name:</b> {name}", styles["Normal"]))
     elements.append(Spacer(1, 10))
 
-    # Table Data
+    # ✅ TABULAR PAYSLIP
     data = [
         ["Description", "Amount (₦)"],
         ["Annual Salary", f"{result['Annual Salary']:,.2f}"],
@@ -91,18 +102,20 @@ def generate_pdf(name, result, logo_file):
         ["Monthly PAYE", f"{result['Monthly Tax']:,.2f}"],
     ]
 
-    table = Table(data, colWidths=[250, 200])
+    table = Table(data, colWidths=[260, 180])
 
     table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
 
         ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
 
         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+
         ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
 
-        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
     ]))
 
     elements.append(table)
@@ -198,4 +211,4 @@ with tab2:
                 file_name="payroll_results.csv",
                 mime="text/csv",
                 key="download_csv"
-                                             )
+    )
