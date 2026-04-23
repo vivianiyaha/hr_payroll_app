@@ -12,9 +12,6 @@ st.set_page_config(page_title="HR Payroll Tool", layout="wide")
 
 st.title("💼 HR Payroll (PAYE) Calculator")
 
-# Upload logo (optional)
-logo.png = st.sidebar.file_uploader("Upload Company Logo (Optional)", type=["png", "jpg", "jpeg"])
-
 # Sidebar settings
 st.sidebar.header("⚙️ Settings")
 
