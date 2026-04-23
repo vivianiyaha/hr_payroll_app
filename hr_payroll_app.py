@@ -133,7 +133,7 @@ with tab1:
                 st.success(f"Annual Tax: ₦{result['Annual Tax']:,.2f}")
                 st.success(f"Monthly PAYE: ₦{result['Monthly Tax']:,.2f}")
 
-            pdf = generate_pdf(name, result, logo_file)
+            pdf = generate_pdf(name, result, logo.png)
 
             st.download_button(
                 label="⬇️ Download Payslip (PDF)",
