@@ -85,7 +85,7 @@ def generate_pdf(name, result):
         ["Monthly PAYE", f"{result['Monthly Tax']:,.2f}"],
     ]
 
-    table = Table(data, colWidths=[360, 280])
+    table = Table(data, colWidths=[260, 280])
 
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
