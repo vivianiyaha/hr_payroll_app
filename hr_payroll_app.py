@@ -68,13 +68,6 @@ def generate_pdf(name, result, logo.png):
     if os.path.exists("logo.png"):
         logo = Image("logo.png", width=120, height=60)
 
-    # Priority 2: uploaded logo
-    elif logo_file:
-        logo_bytes = logo_file.read()
-        logo_buffer = BytesIO(logo_bytes)
-        logo_buffer.seek(0)
-        logo = Image(logo_buffer, width=120, height=60)
-
     # Add logo if available
     if logo:
         elements.append(logo)
