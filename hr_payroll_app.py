@@ -5,6 +5,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from io import BytesIO
+import os
 
 # Page config
 st.set_page_config(page_title="HR Payroll Tool", layout="wide")
@@ -68,9 +69,7 @@ def generate_pdf(name, result, logo_file):
         logo = Image(logo_file, width=100, height=50)
         elements.append(logo)
     logo_path = "logo.png"
-    import os
-    if os.path.exists(logo_path):
-    logo = Image(logo_path, width=120, height=60)
+    
     elements.append(logo)
     elements.append(Spacer(1, 10))
 
